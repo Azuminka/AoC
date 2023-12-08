@@ -1,3 +1,4 @@
+from functools import reduce
 def parse_and_find_lowest_location(file_path):
     with open(file_path, 'r') as file:
         seeds = list(map(int, file.readline().split(': ')[1].split()))
@@ -17,13 +18,12 @@ def parse_and_find_lowest_location(file_path):
                 return dest_start + (number - src_start)
         return number
 
-    return min(map_number(map_number(map_number(map_number(map_number(map_number(map_number(seed, maps['seed_to_soil']), 
-                                                                      maps['soil_to_fertilizer']), 
-                                                          maps['fertilizer_to_water']), 
-                                                  maps['water_to_light']), 
-                                          maps['light_to_temperature']), 
-                                  maps['temperature_to_humidity']), 
-                      maps['humidity_to_location']) for seed in seeds)
+    mapping_sequence = [maps['seed_to_soil'], maps['soil_to_fertilizer'], maps['fertilizer_to_water'], 
+                        maps['water_to_light'], maps['light_to_temperature'], maps['temperature_to_humidity'], 
+                        maps['humidity_to_location']]
+
+    return min(reduce(lambda num, map: map_number(num, map), mapping_sequence, seed) for seed in seeds)
+
 
 lowest_location = parse_and_find_lowest_location('day5.txt')
 print(lowest_location)
